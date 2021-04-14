@@ -1,0 +1,12 @@
+name: Varo
+version: "1.0"
+main: de.tzimom.varo.Main
+description: Main plugin for a varo project
+author: Tzimom
+authors:
+  - xQuiesel
+
+commands:
+  time:
+    usage: /time
+    description: Displays the time left to play on the server that day
