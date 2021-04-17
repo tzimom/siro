@@ -2,7 +2,6 @@ package de.tzimom.siro.utils;
 
 import de.tzimom.siro.Main;
 import de.tzimom.siro.managers.GameManager;
-import de.tzimom.siro.teams.Team;
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;

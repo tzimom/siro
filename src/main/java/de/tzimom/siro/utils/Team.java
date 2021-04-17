@@ -1,10 +1,10 @@
-package de.tzimom.siro.teams;
+package de.tzimom.siro.utils;
 
 import java.util.UUID;
 
 public class Team {
 
-    public static final byte MAX_NAME_LENGTH = 4;
+    public static final byte MAX_NAME_LENGTH = 16;
 
     private String teamName;
     private UUID[] members;

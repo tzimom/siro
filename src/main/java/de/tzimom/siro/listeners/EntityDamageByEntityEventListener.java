@@ -1,8 +1,10 @@
 package de.tzimom.siro.listeners;
 
 import de.tzimom.siro.utils.CustomPlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -10,17 +12,32 @@ import java.util.UUID;
 
 public class EntityDamageByEntityEventListener implements Listener {
 
+    @EventHandler
     public void handleEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        Entity damager = event.getDamager();
+        Entity damagerEntity = event.getDamager();
 
-        if (!(damager instanceof Player))
+        if (!(damagerEntity instanceof Player))
             return;
 
-        Player player = (Player) damager;
+        Player damager = (Player) damagerEntity;
+        UUID damagerUuid = damager.getUniqueId();
+        CustomPlayer customDamager = CustomPlayer.getPlayer(damagerUuid);
+
+        if (customDamager.isProtected()) {
+            event.setCancelled(true);
+            return;
+        }
+
+        Entity entity = event.getEntity();
+
+        if (!(entity instanceof Player))
+            return;
+
+        Player player = (Player) entity;
         UUID uuid = player.getUniqueId();
         CustomPlayer customPlayer = CustomPlayer.getPlayer(uuid);
 
-        if (customPlayer.isProtected())
+        if (customPlayer.getTeam() != null && customDamager.getTeam() == customPlayer.getTeam())
             event.setCancelled(true);
     }
 

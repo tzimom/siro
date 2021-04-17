@@ -1,6 +1,6 @@
 package de.tzimom.siro.managers;
 
-import de.tzimom.siro.teams.Team;
+import de.tzimom.siro.utils.Team;
 import de.tzimom.siro.utils.CustomPlayer;
 
 import java.util.*;

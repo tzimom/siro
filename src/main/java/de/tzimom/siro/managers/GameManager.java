@@ -4,9 +4,15 @@ import de.tzimom.siro.Main;
 import de.tzimom.siro.utils.CustomPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.WorldBorder;
 
+import javax.swing.border.Border;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class GameManager extends FileManager {
 
@@ -20,6 +26,7 @@ public class GameManager extends FileManager {
 
     private final TeamManager teamManager = new TeamManager();
     private final PlayerManager playerManager = new PlayerManager();
+    private final BorderManager borderManager = new BorderManager();
     private final CountDown countDown = new CountDown();
 
     public GameManager() {
@@ -68,6 +75,8 @@ public class GameManager extends FileManager {
             player.prepare();
             player.onJoin();
         });
+
+        borderManager.start();
     }
 
     public boolean stopGame() {
@@ -76,8 +85,9 @@ public class GameManager extends FileManager {
                 player.reset();
                 player.prepare();
             });
-            Bukkit.broadcastMessage(plugin.prefix + "§cDas Spiel wurde beendet");
 
+            borderManager.cancel();
+            Bukkit.broadcastMessage(plugin.prefix + "§cDas Spiel wurde beendet");
             running = false;
             return true;
         }
@@ -91,7 +101,6 @@ public class GameManager extends FileManager {
 
             Bukkit.broadcastMessage(plugin.prefix + "§cDer Countdown wurde abgebrochen");
             countDown.cancel();
-
             return true;
         }
 
@@ -110,6 +119,17 @@ public class GameManager extends FileManager {
     public static long getCurrentDay() {
         long currentTime = System.currentTimeMillis();
         return (long) Math.floor(currentTime / 1000d / 60d / 60d / 24d);
+    }
+
+    private Set<CustomPlayer> getPlayers() {
+        Set<CustomPlayer> players = new HashSet<>();
+
+        teamManager.getTeams().forEach(team -> {
+            for (UUID member : team.getMembers())
+                players.add(CustomPlayer.getPlayer(member));
+        });
+
+        return players;
     }
 
     public TeamManager getTeamManager() {
@@ -160,6 +180,81 @@ public class GameManager extends FileManager {
 
         private void reset() {
             timeLeft = COUNTDOWN_TIME;
+        }
+    }
+
+    private class BorderManager {
+        private static final int BLOCKS_PER_PLAYER_OVERWORLD = 350 * 350;
+        private static final int BLOCKS_PER_PLAYER_NETHER = 200 * 200;
+        private static final int FINAL_RADIUS = 400;
+        private static final int SHRINK_INTERVAL = 3;
+        private static final int TIME_TO_FINAL = 24;
+
+        private final WorldBorder overworld;
+        private final WorldBorder nether;
+
+        private int task;
+        private boolean running;
+
+        private int radiusOverworld;
+
+        private int passedDays;
+        private boolean closed;
+
+        private BorderManager() {
+            overworld = Bukkit.getWorld("world").getWorldBorder();
+            nether = Bukkit.getWorld("world_nether").getWorldBorder();
+
+            overworld.setCenter(0d, 0d);
+            nether.setCenter(0d, 0d);
+        }
+
+        private void start() {
+            if (running)
+                return;
+
+            running = true;
+            reset();
+
+            task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+                if (!closed && hasClosed()) {
+                    passedDays ++;
+
+                    if (passedDays >= TIME_TO_FINAL) {
+                        cancel();
+                        overworld.setSize(FINAL_RADIUS);
+                        return;
+                    }
+
+                    if (passedDays % SHRINK_INTERVAL == 0) {
+                        int shrinkAmount = (int) Math.floor((radiusOverworld - FINAL_RADIUS) * (double) SHRINK_INTERVAL / TIME_TO_FINAL);
+                        overworld.setSize(overworld.getSize() - shrinkAmount);
+                    }
+                }
+
+                closed = hasClosed();
+            }, 0, 20);
+        }
+
+        private void cancel() {
+            if (!running)
+                return;
+
+            running = false;
+            Bukkit.getScheduler().cancelTask(task);
+        }
+
+        private void reset() {
+            passedDays = 0;
+            closed = hasClosed();
+
+            int playerCount = getPlayers().size();
+
+            radiusOverworld = (int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_OVERWORLD * playerCount));
+            int radiusNether = (int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_NETHER * playerCount));
+
+            overworld.setSize(radiusOverworld);
+            nether.setSize(radiusNether);
         }
     }
 

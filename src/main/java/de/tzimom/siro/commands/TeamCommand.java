@@ -1,7 +1,7 @@
 package de.tzimom.siro.commands;
 
 import de.tzimom.siro.Main;
-import de.tzimom.siro.teams.Team;
+import de.tzimom.siro.utils.Team;
 import de.tzimom.siro.utils.CustomPlayer;
 import de.tzimom.siro.utils.Permission;
 import de.tzimom.siro.utils.Usage;
@@ -76,6 +76,11 @@ public class TeamCommand implements CommandExecutor {
             if (team == null) {
                 sender.sendMessage(plugin.prefix + "§cDas Team existiert nicht");
                 return true;
+            }
+
+            for (UUID member : team.getMembers()) {
+                if (member != null)
+                    CustomPlayer.getPlayer(member).setTeam(null);
             }
 
             plugin.getGameManager().getTeamManager().deleteTeam(team);
