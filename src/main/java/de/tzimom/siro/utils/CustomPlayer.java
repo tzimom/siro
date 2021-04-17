@@ -48,15 +48,9 @@ public class CustomPlayer {
     }
 
     public void onPreLogin(boolean protect) {
-        if (!plugin.getGameManager().isRunning()) {
-            reset();
-            return;
-        }
-
         joinTimestamp = System.currentTimeMillis();
 
-        if (protect)
-            joinTimestamp += PROTECTION_TIME * 1000;
+        if (protect) joinTimestamp += PROTECTION_TIME * 1000;
 
         long remainingTime = getRemainingTime();
 
@@ -65,7 +59,7 @@ public class CustomPlayer {
             return;
         }
 
-        if (getRemainingTime() <= 0 && !nextDay)
+        if (remainingTime <= 0 && !nextDay)
             nextDay = true;
     }
 
@@ -89,9 +83,8 @@ public class CustomPlayer {
             return;
 
         long currentDay = GameManager.getCurrentDay() + (nextDay ? 1 : 0);
-        long currentPlayTime = playTimes.getOrDefault(currentDay, 0l);
 
-        playTimes.put(currentDay, getPlayedTime() + currentPlayTime);
+        playTimes.put(currentDay, getPlayedTime());
     }
 
     public void onDie() {
@@ -126,9 +119,10 @@ public class CustomPlayer {
     }
 
     public void reset() {
+        playTimes.clear();
         banned = false;
         nextDay = false;
-        joinTimestamp = 0;
+        joinTimestamp = System.currentTimeMillis();
         lastNotify = 0;
     }
 
@@ -150,7 +144,8 @@ public class CustomPlayer {
         long remainingTime = getRemainingTime();
 
         if (remainingTime <= 0) {
-            kick("§cDeine Zeit ist abgelaufen");
+            kick("§cDeine Zeit ist abgelaufen", false);
+            Bukkit.broadcastMessage("a");
             return;
         }
 
@@ -168,17 +163,22 @@ public class CustomPlayer {
             notifyPlayer(player);
     }
 
-    private void kick(String reason) {
+    public void kick(String reason, boolean force) {
         Player player = getPlayer();
 
         if (player == null)
             return;
 
+        if (force || !inCombat())
         player.kickPlayer(reason);
     }
 
+    private boolean inCombat() {
+        return false;
+    }
+
     public void ban() {
-        kick("§cDu bist aus dem Projekt ausgeschieden");
+        kick("§cDu bist aus dem Projekt ausgeschieden", true);
         banned = true;
     }
 

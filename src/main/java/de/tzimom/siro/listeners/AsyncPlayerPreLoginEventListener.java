@@ -1,6 +1,7 @@
 package de.tzimom.siro.listeners;
 
 import de.tzimom.siro.Main;
+import de.tzimom.siro.managers.GameManager;
 import de.tzimom.siro.utils.CustomPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,13 +11,17 @@ import java.util.UUID;
 
 public class AsyncPlayerPreLoginEventListener implements Listener {
 
-    private Main plugin = Main.getInstance();
+    private final Main plugin = Main.getInstance();
 
     @EventHandler
     public void handleAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
+        if (plugin.getGameManager().hasClosed()) {
+            event.setKickMessage("§cDer Server hat nur zwischen " + GameManager.SERVER_OPENING_TIME + " Uhr und " +
+                    GameManager.SERVER_CLOSING_TIME + " Uhr geöffnet");
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_FULL);
+        }
 
         UUID uuid = event.getUniqueId();
-
         CustomPlayer customPlayer = CustomPlayer.getPlayer(uuid);
         customPlayer.onPreLogin(true);
 

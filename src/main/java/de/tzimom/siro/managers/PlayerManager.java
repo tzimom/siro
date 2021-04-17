@@ -20,14 +20,11 @@ public class PlayerManager extends FileManager {
                 UUID uuid = UUID.fromString(uuidString);
                 CustomPlayer customPlayer = CustomPlayer.getPlayer(uuid);
 
-//                if (getConfig().contains(prefix + "playTimes") && getConfig().isConfigurationSection(prefix + "playTimes")) {
                 getConfig().getConfigurationSection(prefix + "playTimes").getKeys(false).forEach(dayString -> {
                     Long day = Long.parseLong(dayString);
                     customPlayer.getPlayTimes().put(day, getConfig().getLong(prefix + "playTimes." + dayString));
                 });
-//                }
 
-//                if (getConfig().contains(prefix + "nextDay"))
                 customPlayer.setNextDay(getConfig().getBoolean(prefix + "nextDay"));
                 customPlayer.setBanned(getConfig().getBoolean(prefix + "banned"));
             } catch (NumberFormatException | NullPointerException ignored) {
@@ -42,7 +39,7 @@ public class PlayerManager extends FileManager {
             String uuidString = uuid.toString();
             String prefix = "players." + uuidString + ".";
 
-            customPlayer.getPlayTimes().forEach((day, playTime) -> getConfig().set(prefix + ".playTimes." + day, playTime));
+            customPlayer.getPlayTimes().forEach((day, playTime) -> getConfig().set(prefix + "playTimes." + day, playTime));
             getConfig().set(prefix + "nextDay", customPlayer.isNextDay());
             getConfig().set(prefix + "banned", customPlayer.isBanned());
         });
