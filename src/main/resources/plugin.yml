@@ -1,15 +1,21 @@
-name: Varo
+name: Siro
 version: "1.0"
 main: de.tzimom.siro.Main
-description: Main plugin for a varo project
+description: Main plugin for a siro project
 author: Tzimom
 authors:
   - xQuiesel
 
 commands:
   team:
-    usage: /team create <TeamName> [<PlayerName> ...]
+    usage: /team create <TeamName> <PlayerName1> [<PlayerName2>]
     description: Creates a new team
-#  time:
-#    usage: /time
-#    description: Displays the time left to play on the server that day
+  siro:
+    usage: /siro start
+    description: Starts the game
+  time:
+    usage: /time
+    description: Displays the time left to play on the server that day
+  ban:
+    usage: /ban <PlayerName>
+    description: Bans a player out of a running siro game

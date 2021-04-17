@@ -1,17 +1,9 @@
 package de.tzimom.siro.utils;
 
-public enum Permission {
+public class Permission {
 
-    COMMAND_SIRO("siro.command.siro");
-
-    private String permission;
-
-    Permission(String permission) {
-        this.permission = permission;
-    }
-
-    public String getPermission() {
-        return permission;
-    }
+    public static final String COMMAND_SIRO = "siro.command.siro";
+    public static final String COMMAND_TEAM = "siro.command.team";
+    public static final String COMMAND_BAN = "siro.command.ban";
 
 }

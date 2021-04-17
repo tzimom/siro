@@ -5,7 +5,9 @@ import org.bukkit.command.CommandSender;
 
 public enum Usage {
 
-    TEAM;
+    SIRO,
+    TEAM,
+    BAN;
 
     private Main plugin = Main.getInstance();
 
@@ -13,11 +15,18 @@ public enum Usage {
         sendHead(sender);
 
         switch (this) {
+            case SIRO:
+                sendLine(sender, "siro start", "Starts the game");
+                sendLine(sender, "siro stop", "Ends the game or cancels the countdown");
+                break;
             case TEAM:
-                sendLine(sender, "team create <TeamName> [<PlayerName> ...]", "Erstellt ein Team");
+                sendLine(sender, "team create <TeamName> [<SpielerName> ...]", "Erstellt ein Team");
+                break;
+            case BAN:
+                sendLine(sender, "ban <SpielerName>", "Schließt einen Spieler aus dem Projekt aus");
                 break;
             default:
-                sender.sendMessage(plugin.prefix + "§cNo help available");
+                sender.sendMessage(plugin.prefix + "§cKeine Hilfe verfügbar");
         }
     }
 
