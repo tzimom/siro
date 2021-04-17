@@ -1,10 +1,13 @@
 package de.tzimom.siro.managers;
 
+import de.tzimom.siro.Main;
 import de.tzimom.siro.utils.CustomPlayer;
 
 import java.util.UUID;
 
 public class PlayerManager extends FileManager {
+
+    private final Main plugin = Main.getInstance();
 
     public PlayerManager() {
         if (!getConfig().contains("players"))

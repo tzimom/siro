@@ -2,9 +2,11 @@ package de.tzimom.siro.utils;
 
 import de.tzimom.siro.Main;
 import de.tzimom.siro.managers.GameManager;
+import de.tzimom.siro.teams.Team;
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -24,8 +26,10 @@ public class CustomPlayer {
     private final Map<Long, Long> playTimes = new HashMap<>();
     private long joinTimestamp;
     private boolean nextDay = false;
-    private boolean banned;
     private int lastNotify = 0;
+
+    private boolean banned;
+    private Team team;
 
     public static CustomPlayer getPlayer(UUID uuid) {
         if (!CUSTOM_PLAYERS.containsKey(uuid))
@@ -201,6 +205,15 @@ public class CustomPlayer {
         player.sendMessage(plugin.prefix + "§7Du kannst noch §6" + remainingTime.toString() + "§7spielen");
     }
 
+    public void playSound(Sound sound) {
+        Player player = getPlayer();
+
+        if (player == null)
+            return;
+
+        player.playSound(player.getLocation(), sound, 1f, 1f);
+    }
+
     public boolean isBanned() {
         return banned;
     }
@@ -223,6 +236,14 @@ public class CustomPlayer {
 
     public static Map<UUID, CustomPlayer> getCustomPlayers() {
         return CUSTOM_PLAYERS;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
 }

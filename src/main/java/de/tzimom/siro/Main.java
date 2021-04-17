@@ -55,6 +55,7 @@ public class Main extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
 
         pluginManager.registerEvents(new AsyncPlayerPreLoginEventListener(), this);
+        pluginManager.registerEvents(new EntityDamageByEntityEventListener(), this);
         pluginManager.registerEvents(new EntityDamageEventListener(), this);
         pluginManager.registerEvents(new FoodLevelChangeEventListener(), this);
         pluginManager.registerEvents(new PlayerDeathEventListener(), this);

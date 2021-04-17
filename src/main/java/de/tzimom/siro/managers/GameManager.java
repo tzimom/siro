@@ -5,7 +5,6 @@ import de.tzimom.siro.utils.CustomPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 
@@ -19,6 +18,7 @@ public class GameManager extends FileManager {
     private final Main plugin = Main.getInstance();
     private boolean running = false;
 
+    private final TeamManager teamManager = new TeamManager();
     private final PlayerManager playerManager = new PlayerManager();
     private final CountDown countDown = new CountDown();
 
@@ -42,7 +42,7 @@ public class GameManager extends FileManager {
         }, 0, 1);
     }
 
-    public void saveConfig() {
+    protected void saveConfig() {
         getConfig().set("running", running);
         super.saveConfig();
     }
@@ -56,26 +56,26 @@ public class GameManager extends FileManager {
     }
 
     private void startGame() {
-        Bukkit.getOnlinePlayers().forEach(player -> {
-            CustomPlayer customPlayer = CustomPlayer.getPlayer(player.getUniqueId());
-            customPlayer.reset();
-            customPlayer.onPreLogin(false);
-
-            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1f, 1f);
+        CustomPlayer.getCustomPlayers().forEach((uuid, player) -> {
+            player.reset();
+            player.onPreLogin(false);
+            player.playSound(Sound.LEVEL_UP);
         });
 
         running = true;
 
-        Bukkit.getOnlinePlayers().forEach(player -> {
-            CustomPlayer customPlayer = CustomPlayer.getPlayer(player.getUniqueId());
-            customPlayer.prepare();
-            customPlayer.onJoin();
+        CustomPlayer.getCustomPlayers().forEach((uuid, player) -> {
+            player.prepare();
+            player.onJoin();
         });
     }
 
     public boolean stopGame() {
         if (running) {
-            Bukkit.getOnlinePlayers().forEach(player -> CustomPlayer.getPlayer(player.getUniqueId()).reset());
+            CustomPlayer.getCustomPlayers().forEach((uuid, player) -> {
+                player.reset();
+                player.prepare();
+            });
             Bukkit.broadcastMessage(plugin.prefix + "§cDas Spiel wurde beendet");
 
             running = false;
@@ -83,11 +83,10 @@ public class GameManager extends FileManager {
         }
 
         if (countDown.running) {
-            Bukkit.getOnlinePlayers().forEach(player -> {
-                CustomPlayer customPlayer = CustomPlayer.getPlayer(player.getUniqueId());
-                customPlayer.reset();
-                customPlayer.prepare();
-                player.playSound(player.getLocation(), Sound.NOTE_BASS, 1f, 1f);
+            CustomPlayer.getCustomPlayers().forEach((uuid, player) -> {
+                player.reset();
+                player.prepare();
+                player.playSound(Sound.NOTE_BASS);
             });
 
             Bukkit.broadcastMessage(plugin.prefix + "§cDer Countdown wurde abgebrochen");
@@ -111,6 +110,10 @@ public class GameManager extends FileManager {
     public static long getCurrentDay() {
         long currentTime = System.currentTimeMillis();
         return (long) Math.floor(currentTime / 1000d / 60d / 60d / 24d);
+    }
+
+    public TeamManager getTeamManager() {
+        return teamManager;
     }
 
     private class CountDown {

@@ -7,13 +7,19 @@ public class Team {
     public static final byte MAX_NAME_LENGTH = 4;
 
     private String teamName;
-    private UUID member1;
-    private UUID member2;
+    private UUID[] members;
 
-    public Team(String teamName, UUID member1, UUID member2) {
+    public Team(String teamName, UUID[] members) {
         this.teamName = teamName;
-        this.member1 = member1;
-        this.member2 = member2;
+        this.members = members;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public UUID[] getMembers() {
+        return members;
     }
 
 }

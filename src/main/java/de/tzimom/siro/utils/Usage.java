@@ -20,7 +20,9 @@ public enum Usage {
                 sendLine(sender, "siro stop", "Ends the game or cancels the countdown");
                 break;
             case TEAM:
-                sendLine(sender, "team create <TeamName> [<SpielerName> ...]", "Erstellt ein Team");
+                sendLine(sender, "team create <TeamName> <SpielerName> [<SpielerName>]", "Erstellt ein Team");
+                sendLine(sender, "team delete <TeamName>", "Löscht ein Team");
+                sendLine(sender, "team list", "Listet die Teams auf");
                 break;
             case BAN:
                 sendLine(sender, "ban <SpielerName>", "Schließt einen Spieler aus dem Projekt aus");
