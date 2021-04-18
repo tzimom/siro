@@ -296,7 +296,7 @@ public class GameManager extends FileManager {
         private int task;
         private boolean running;
 
-        private int radiusOverworld;
+        private int startingOverworldRadius;
 
         private int passedDays;
         private boolean closed;
@@ -323,8 +323,8 @@ public class GameManager extends FileManager {
                     }
 
                     if (passedDays % SHRINK_INTERVAL == 0) {
-                        int shrinkAmount = (int) Math.floor((radiusOverworld - FINAL_RADIUS) * (double) SHRINK_INTERVAL / TIME_TO_FINAL);
-                        overworld.setSize(overworld.getSize() - shrinkAmount);
+                        int shrink = (int) Math.floor((startingOverworldRadius - FINAL_RADIUS) / (double) TIME_TO_FINAL);
+                        overworld.setSize(startingOverworldRadius - (shrink * passedDays));
                     }
                 }
 
@@ -352,10 +352,10 @@ public class GameManager extends FileManager {
             overworld.setDamageAmount(1d);
             overworld.setDamageBuffer(0d);
 
-            radiusOverworld = Math.max((int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_OVERWORLD * playerCount)), FINAL_RADIUS);
+            startingOverworldRadius = Math.max((int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_OVERWORLD * playerCount)), FINAL_RADIUS);
             int radiusNether = Math.max((int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_NETHER * playerCount)), FINAL_RADIUS);
 
-            overworld.setSize(GameManager.this.running ? radiusOverworld : FINAL_RADIUS);
+            overworld.setSize(GameManager.this.running ? startingOverworldRadius : FINAL_RADIUS);
             nether.setSize(radiusNether);
         }
     }
