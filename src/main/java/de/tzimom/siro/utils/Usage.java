@@ -20,13 +20,14 @@ public enum Usage {
                 sendLine(sender, "siro addspawn", "Fügt einen Spawnpunkt hinzu");
                 sendLine(sender, "siro removespawn <ID>", "Entfernt einen Spawnpunkt");
                 sendLine(sender, "siro spawns", "Zeigt die Spawns an");
-                sendLine(sender, "siro ban <PlayerName>", "Lässt einen Spieler ausscheiden");
+                sendLine(sender, "siro ban <SpielerName>", "Lässt einen Spieler ausscheiden");
                 break;
             case TEAM:
                 sendLine(sender, "team create <TeamName> <SpielerName> [<SpielerName>]", "Erstellt ein Team");
                 sendLine(sender, "team delete <TeamName>", "Löscht ein Team");
                 sendLine(sender, "team list", "Listet die Teams auf");
-                sendLine(sender, "team of [<PlayerName>]|[*]", "Zeigt, in welchem Team ein, oder alle Spieler sich befinden");
+                sendLine(sender, "team of [<SpielerName>]|[*]", "Zeigt, in welchem Team ein, oder alle Spieler sich befinden");
+                sendLine(sender, "team rename <Name> <NeuerName>", "Benennt ein Team um");
                 break;
             default:
                 sender.sendMessage(plugin.prefix + "§cKeine Hilfe verfügbar");

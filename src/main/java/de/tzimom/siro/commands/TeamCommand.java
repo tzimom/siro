@@ -129,6 +129,30 @@ public class TeamCommand implements CommandExecutor {
             }
 
             sender.sendMessage(plugin.prefix + "§6" + player.getName() + " §7ist im Team §b" + team.getTeamName());
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("rename")) {
+            final String teamName = args[1];
+            final Team team = plugin.getGameManager().getTeamManager().getTeam(teamName);
+
+            if (team == null) {
+                sender.sendMessage(plugin.prefix + "§cDas Team existiert nicht");
+                return true;
+            }
+
+            final String newTeamName = args[2];
+
+            if (plugin.getGameManager().getTeamManager().getTeam(newTeamName) != null) {
+                sender.sendMessage(plugin.prefix + "§cEin Team mit dem Namen " + teamName + " existiert bereits");
+                return true;
+            }
+
+            if (newTeamName.length() > Team.MAX_NAME_LENGTH) {
+                sender.sendMessage(plugin.prefix + "§cDer Teamname darf nicht länger als " + Team.MAX_NAME_LENGTH +
+                        " Zeichen sein");
+                return true;
+            }
+
+            team.rename(newTeamName);
+            sender.sendMessage(plugin.prefix + "§7Das Team §6" + teamName + " §7wurde zu §6" + newTeamName + " §7umbenannt");
         } else {
             Usage.TEAM.send(sender);
         }

@@ -24,23 +24,33 @@ public class PlayerDeathEventListener implements Listener {
 
         Bukkit.getOnlinePlayers().forEach(target -> player.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f));
 
-        int teamsAlive = 0;
         Team winnerTeam = null;
 
         for (Team team : plugin.getGameManager().getTeamManager().getTeams()) {
+            boolean multipleTeams = false;
+
             for (UUID member : team.getMembers()) {
                 if (member == null) continue;
                 if (CustomPlayer.getPlayer(member).isBanned()) continue;
 
-                teamsAlive ++;
+                if (winnerTeam != null) {
+                    multipleTeams = true;
+                    winnerTeam = null;
+                    break;
+                }
+
                 winnerTeam = team;
                 break;
             }
+
+            if (multipleTeams)
+                break;
         }
 
-        if (teamsAlive == 1) {
+        if (winnerTeam != null) {
             Bukkit.broadcastMessage(plugin.prefix + "§aDas Team §6" + winnerTeam.getTeamName() + " §ahat gewonnen");
             Bukkit.getOnlinePlayers().forEach(target -> target.playSound(target.getLocation(), Sound.LEVEL_UP, 1f, 1f));
+            plugin.getGameManager().stopGame();
         }
     }
 

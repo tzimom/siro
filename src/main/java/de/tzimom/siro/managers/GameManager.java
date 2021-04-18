@@ -117,6 +117,8 @@ public class GameManager extends FileManager {
 
         countDown.start();
 
+        Bukkit.getOnlinePlayers().forEach(player -> CustomPlayer.getPlayer(player.getUniqueId()).prepare());
+
         Bukkit.getWorlds().forEach(world -> {
             world.setTime(0);
             world.setStorm(false);
@@ -127,6 +129,7 @@ public class GameManager extends FileManager {
                     entity.remove();
             });
         });
+
         return true;
     }
 

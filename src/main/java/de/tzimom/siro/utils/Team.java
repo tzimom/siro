@@ -18,6 +18,10 @@ public class Team {
         return teamName;
     }
 
+    public void rename(String teamName) {
+        this.teamName = teamName;
+    }
+
     public UUID[] getMembers() {
         return members;
     }
