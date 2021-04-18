@@ -18,6 +18,7 @@ public class CustomPlayer {
 
     private static final int PROTECTION_TIME = 10;
     private static final int PLAY_TIME = 60 * 20;
+    private static final int MAX_COMBAT_DISTANCE = 25;
 
     private final Main plugin = Main.getInstance();
     private final UUID uuid;
@@ -29,6 +30,7 @@ public class CustomPlayer {
 
     private boolean banned;
     private Team team;
+    private UUID combat;
 
     public static CustomPlayer getPlayer(UUID uuid) {
         if (!CUSTOM_PLAYERS.containsKey(uuid))
@@ -88,6 +90,7 @@ public class CustomPlayer {
         long currentDay = GameManager.getCurrentDay() + (nextDay ? 1 : 0);
 
         playTimes.put(currentDay, getPlayedTime());
+        combat = null;
     }
 
     public void onDie() {
@@ -105,7 +108,7 @@ public class CustomPlayer {
         if (player == null)
             return;
 
-        if (player.isOp())
+        if (player.isOp() && team == null)
             return;
 
         player.getInventory().clear();
@@ -176,17 +179,23 @@ public class CustomPlayer {
         if (player == null)
             return;
 
-        if (player.isOp()) {
+        if (player.isOp() && team == null) {
             player.sendMessage(plugin.prefix + "§7Kick durch OP verhindert: " + reason);
             return;
         }
 
-        if (force || !inCombat())
-        player.kickPlayer(reason);
+        if (force || !isInCombat())
+            player.kickPlayer(reason);
     }
 
-    private boolean inCombat() {
-        return false;
+    private boolean isInCombat() {
+        return combat != null && Bukkit.getOfflinePlayer(uuid).isOnline() || getPlayer() != null && getPlayer().isOnline()
+                && getPlayer().getLocation().clone().add(Bukkit.getPlayer(uuid).getLocation().clone().multiply(-1))
+                .lengthSquared() < MAX_COMBAT_DISTANCE * MAX_COMBAT_DISTANCE;
+    }
+
+    public void setCombat(UUID uuid) {
+        combat = uuid;
     }
 
     public void ban() {

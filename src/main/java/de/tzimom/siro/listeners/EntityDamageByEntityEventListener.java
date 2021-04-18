@@ -1,7 +1,6 @@
 package de.tzimom.siro.listeners;
 
 import de.tzimom.siro.utils.CustomPlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -39,6 +38,10 @@ public class EntityDamageByEntityEventListener implements Listener {
 
         if (customPlayer.getTeam() != null && customDamager.getTeam() == customPlayer.getTeam())
             event.setCancelled(true);
+        else {
+            customDamager.setCombat(player.getUniqueId());
+            customPlayer.setCombat(damager.getUniqueId());
+        }
     }
 
 }
