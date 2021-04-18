@@ -102,7 +102,7 @@ public class SpawnPointManager extends FileManager {
             for (int i = 0; i <= 3; i ++) {
                 final Location shiftedLocation = location.clone().add(0, i * shift, 0);
                 final PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(EnumParticle.FLAME,
-                        true, x + .5f, (float) shiftedLocation.getY(), z + .5f, .2f, .2f, .2f, 0f, 50);
+                        true, x + .5f, (float) shiftedLocation.getY(), z + .5f, .2f, .2f, .2f, 0f, 20);
                 craftPlayer.getHandle().playerConnection.sendPacket(packet);
             }
         }
