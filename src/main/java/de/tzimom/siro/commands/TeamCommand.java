@@ -10,7 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.omg.CORBA.CustomMarshal;
 
 import java.util.Collection;
 import java.util.Set;
@@ -18,7 +17,7 @@ import java.util.UUID;
 
 public class TeamCommand implements CommandExecutor {
 
-    private Main plugin = Main.getInstance();
+    private final Main plugin = Main.getInstance();
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission(Permission.COMMAND_TEAM)) {
@@ -107,7 +106,7 @@ public class TeamCommand implements CommandExecutor {
                     final Team team = customPlayer.getTeam();
 
                     sender.sendMessage(plugin.prefix + "§8- §b" + player.getName() + "§8: " +
-                            (team == null ? "§7Kein Team" : "§7" + team.getTeamName()));
+                            (team == null ? "§cKein Team" : "§7" + team.getTeamName()));
                 });
 
                 return true;

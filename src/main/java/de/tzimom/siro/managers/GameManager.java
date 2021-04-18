@@ -8,7 +8,6 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
-import org.omg.CORBA.CustomMarshal;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -19,8 +18,6 @@ public class GameManager extends FileManager {
 
     public static final LocalTime SERVER_OPENING_TIME = LocalTime.parse("07:00");
     public static final LocalTime SERVER_CLOSING_TIME = LocalTime.parse("23:00");
-
-    private static final int COUNTDOWN_TIME = 30;
 
     private final Main plugin = Main.getInstance();
     private boolean running = false;
@@ -70,6 +67,7 @@ public class GameManager extends FileManager {
 
             Location spawn = null;
 
+            System.out.println("Team: " + team.getTeamName());
             for (UUID uuid : team.getMembers()) {
                 if (uuid == null)
                     continue;
@@ -79,25 +77,40 @@ public class GameManager extends FileManager {
                 if (player == null)
                     continue;
 
+                System.out.println("Team: " + team.getTeamName() + " " + player.getName());
+
                 if (spawn == null) {
+                    System.out.println("Team: " + team.getTeamName() + " " + " " + player.getName() + " a");
                     spawn = spawnsSorted.get(0);
                     player.teleport(spawn);
                     spawnsSorted.remove(spawn);
                 } else {
                     Location nearest = null;
                     int nearestDistanceSquared = 0;
+                    System.out.println("Team: " + team.getTeamName() + " " + player.getName() + " b");
 
                     for (Location current : spawnsSorted) {
-                        int distanceX = current.getBlockX() - spawn.getBlockY();
+                        int distanceX = current.getBlockX() - spawn.getBlockX();
                         int distanceZ = current.getBlockZ() - spawn.getBlockZ();
 
-                        int currentNearestDistanceSquared = distanceX * distanceZ;
+                        int currentNearestDistanceSquared = distanceX * distanceX + distanceZ * distanceZ;
 
+                        System.out.println("Team: " + team.getTeamName() + " " + player.getName() + " " + currentNearestDistanceSquared);
+                        System.out.println("Team: " + team.getTeamName() + " " + player.getName() + " " +
+                                spawn.getBlockX() + " " + spawn.getBlockY() + " " + spawn.getBlockZ() + " " +
+                                current.getBlockX() + " " + current.getBlockY() + " " + current.getBlockZ());
                         if (nearest == null || currentNearestDistanceSquared < nearestDistanceSquared) {
+                            System.out.println("Team: " + team.getTeamName() + " " + player.getName() + " " + currentNearestDistanceSquared + "a");
                             nearest = current;
                             nearestDistanceSquared = currentNearestDistanceSquared;
                         }
                     }
+
+                    if (nearest == null)
+                        continue;
+
+                    player.teleport(nearest);
+                    spawnsSorted.remove(nearest);
                 }
             }
         }
@@ -203,6 +216,8 @@ public class GameManager extends FileManager {
     }
 
     private class CountDown {
+        private static final int COUNTDOWN_TIME = 30;
+
         private boolean running;
         private int task;
         private int timeLeft;
