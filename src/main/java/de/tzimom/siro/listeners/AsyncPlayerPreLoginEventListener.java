@@ -17,12 +17,21 @@ public class AsyncPlayerPreLoginEventListener implements Listener {
 
     @EventHandler
     public void handleAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
-        UUID uuid = event.getUniqueId();
+        final UUID uuid = event.getUniqueId();
+        final CustomPlayer customPlayer = CustomPlayer.getPlayer(uuid);
+
+        boolean op = false;
 
         for (OfflinePlayer operator : Bukkit.getOperators()) {
-            if (operator.getUniqueId().equals(event.getUniqueId()))
-                return;
+            if (operator.getUniqueId().equals(event.getUniqueId())) {
+                op = true;
+                break;
+            }
         }
+
+        customPlayer.onPreLogin(!op);
+
+        if (op) return;
 
         if (plugin.getGameManager().isCountDownRunning()) {
             event.setKickMessage("§cDer Countdown hat bereits begonnen");
@@ -36,9 +45,6 @@ public class AsyncPlayerPreLoginEventListener implements Listener {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_FULL);
             return;
         }
-
-        CustomPlayer customPlayer = CustomPlayer.getPlayer(uuid);
-        customPlayer.onPreLogin(true);
 
         if (customPlayer.isBanned()) {
             event.setKickMessage("§cDu bist aus dem Projekt ausgeschieden");

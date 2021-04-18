@@ -329,7 +329,7 @@ public class GameManager extends FileManager {
                 }
 
                 closed = hasClosed();
-            }, 0, 20);
+            }, 0, 20 * 60);
         }
 
         private void cancel() {
