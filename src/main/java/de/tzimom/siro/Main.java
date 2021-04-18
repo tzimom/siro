@@ -52,6 +52,7 @@ public class Main extends JavaPlugin {
     private void loadListeners() {
         PluginManager pluginManager = Bukkit.getPluginManager();
 
+        pluginManager.registerEvents(new AsyncPlayerChatEventListener(), this);
         pluginManager.registerEvents(new AsyncPlayerPreLoginEventListener(), this);
         pluginManager.registerEvents(new EntityDamageByEntityEventListener(), this);
         pluginManager.registerEvents(new EntityDamageEventListener(), this);
