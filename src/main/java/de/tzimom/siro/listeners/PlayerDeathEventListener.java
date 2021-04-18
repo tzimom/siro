@@ -22,7 +22,7 @@ public class PlayerDeathEventListener implements Listener {
         UUID uuid = player.getUniqueId();
         CustomPlayer.getPlayer(uuid).onDie();
 
-        Bukkit.getOnlinePlayers().forEach(target -> player.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f));
+        Bukkit.getOnlinePlayers().forEach(target -> target.playSound(player.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f));
 
         Team winnerTeam = null;
 
