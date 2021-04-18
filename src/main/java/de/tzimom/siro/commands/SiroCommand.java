@@ -3,10 +3,12 @@ package de.tzimom.siro.commands;
 import de.tzimom.siro.Main;
 import de.tzimom.siro.managers.GameManager;
 import de.tzimom.siro.managers.SpawnPointManager;
+import de.tzimom.siro.utils.CustomPlayer;
 import de.tzimom.siro.utils.Permission;
 import de.tzimom.siro.utils.Usage;
 import net.minecraft.server.v1_8_R1.EnumParticle;
 import net.minecraft.server.v1_8_R1.PacketPlayOutWorldParticles;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
@@ -20,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class SiroCommand implements CommandExecutor {
 
@@ -95,6 +98,30 @@ public class SiroCommand implements CommandExecutor {
                 sender.sendMessage(plugin.prefix + "§6§lSpawns:");
                 spawns.forEach((id, location) -> spawnPointManager.display(id, location, sender));
             }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("ban")) {
+            final String playerName = args[1];
+            final Player player = Bukkit.getPlayer(playerName);
+
+            if (player == null) {
+                sender.sendMessage(plugin.prefix + "§cDer Spieler ist nicht online");
+                return true;
+            }
+
+            UUID uuid = player.getUniqueId();
+            CustomPlayer customPlayer = CustomPlayer.getPlayer(uuid);
+
+            if (!plugin.getGameManager().isRunning()) {
+                sender.sendMessage(plugin.prefix + "§cDas Spiel ist noch nicht gestartet");
+                return true;
+            }
+
+            if (customPlayer.isBanned()) {
+                sender.sendMessage(plugin.prefix + "§cDer Spieler ist bereits ausgeschieden");
+                return true;
+            }
+
+            customPlayer.ban();
+            sender.sendMessage(plugin.prefix + "§7Der Spieler §6" + player.getName() + " §7wurde aus dem Projekt ausgeschieden.");
         } else
             Usage.SIRO.send(sender);
 

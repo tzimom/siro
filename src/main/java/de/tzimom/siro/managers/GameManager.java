@@ -136,14 +136,15 @@ public class GameManager extends FileManager {
 
     public boolean stopGame() {
         if (running) {
+            running = false;
+            borderManager.cancel();
+
             CustomPlayer.getCustomPlayers().forEach((uuid, player) -> {
                 player.reset();
                 player.prepare();
             });
 
-            borderManager.cancel();
             Bukkit.broadcastMessage(plugin.prefix + "§cDas Spiel wurde beendet");
-            running = false;
             return true;
         }
 

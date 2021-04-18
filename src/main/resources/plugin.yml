@@ -11,11 +11,8 @@ commands:
     usage: /team create <TeamName> <PlayerName1> [<PlayerName2>]
     description: Creates a new team
   siro:
-    usage: /siro start
+    usage: /siro [start]|[stop]|[
     description: Starts the game
   time:
     usage: /time
     description: Displays the time left to play on the server that day
-  ban:
-    usage: /ban <PlayerName>
-    description: Bans a player out of a running siro game

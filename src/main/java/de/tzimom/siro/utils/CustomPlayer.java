@@ -135,7 +135,7 @@ public class CustomPlayer {
     }
 
     public boolean isProtected() {
-        return plugin.getGameManager().isRunning() && System.currentTimeMillis() - joinTimestamp <= 0;
+        return plugin.getGameManager().isRunning() && System.currentTimeMillis() - joinTimestamp < 0;
     }
 
     private long getPlayedTime() {
@@ -153,7 +153,6 @@ public class CustomPlayer {
 
         if (remainingTime <= 0) {
             kick("§cDeine Zeit ist abgelaufen", false);
-            Bukkit.broadcastMessage("a");
             return;
         }
 

@@ -1,6 +1,5 @@
 package de.tzimom.siro;
 
-import de.tzimom.siro.commands.BanCommand;
 import de.tzimom.siro.commands.SiroCommand;
 import de.tzimom.siro.commands.TeamCommand;
 import de.tzimom.siro.commands.TimeCommand;
@@ -45,7 +44,6 @@ public class Main extends JavaPlugin {
     }
 
     private void loadCommands() {
-        getCommand("ban").setExecutor(new BanCommand());
         getCommand("siro").setExecutor(new SiroCommand());
         getCommand("team").setExecutor(new TeamCommand());
         getCommand("time").setExecutor(new TimeCommand());

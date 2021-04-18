@@ -4,6 +4,7 @@ import de.tzimom.siro.Main;
 import de.tzimom.siro.managers.GameManager;
 import de.tzimom.siro.utils.CustomPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -18,8 +19,10 @@ public class AsyncPlayerPreLoginEventListener implements Listener {
     public void handleAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
 
-        if (Bukkit.getPlayer(uuid).isOp())
-            return;
+        for (OfflinePlayer operator : Bukkit.getOperators()) {
+            if (operator.getUniqueId().equals(event.getUniqueId()))
+                return;
+        }
 
         if (plugin.getGameManager().isCountDownRunning()) {
             event.setKickMessage("§cDer Countdown hat bereits begonnen");
