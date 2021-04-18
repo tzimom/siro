@@ -32,12 +32,21 @@ public class GameManager extends FileManager {
         if (getConfig().contains("running"))
             running = getConfig().getBoolean("running");
 
+        if (getConfig().contains("passedDays"))
+            borderManager.passedDays = getConfig().getInt("passedDays");
+
+        if (getConfig().contains("closed"))
+            borderManager.closed = getConfig().getBoolean("closed");
+
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             if (!running)
                 return;
 
             Bukkit.getOnlinePlayers().forEach(player -> {
-                CustomPlayer customPlayer = CustomPlayer.getPlayer(player.getUniqueId());
+                final CustomPlayer customPlayer = CustomPlayer.getPlayer(player.getUniqueId());
+
+                if (player.isOp() && customPlayer.getTeam() == null)
+                    return;
 
                 if (hasClosed())
                     customPlayer.kick("§cDer Server hat jetzt geschlossen. Er öffnet wieder um " +
@@ -50,6 +59,8 @@ public class GameManager extends FileManager {
 
     protected void saveConfig() {
         getConfig().set("running", running);
+        getConfig().set("passedDays", borderManager.passedDays);
+        getConfig().set("closed", borderManager.closed);
         super.saveConfig();
     }
 
@@ -147,6 +158,7 @@ public class GameManager extends FileManager {
             player.onJoin();
         });
 
+        borderManager.reset();
         borderManager.start();
     }
 
@@ -218,6 +230,10 @@ public class GameManager extends FileManager {
         return spawnPointManager;
     }
 
+    public BorderManager getBorderManager() {
+        return borderManager;
+    }
+
     private class CountDown {
         private static final int COUNTDOWN_TIME = 30;
 
@@ -267,7 +283,7 @@ public class GameManager extends FileManager {
         }
     }
 
-    private class BorderManager {
+    public class BorderManager {
         private static final int BLOCKS_PER_PLAYER_OVERWORLD = 350 * 350;
         private static final int BLOCKS_PER_PLAYER_NETHER = 200 * 200;
         private static final int FINAL_RADIUS = 400;
@@ -288,16 +304,13 @@ public class GameManager extends FileManager {
         private BorderManager() {
             overworld = Bukkit.getWorld("world").getWorldBorder();
             nether = Bukkit.getWorld("world_nether").getWorldBorder();
-
-            reset();
         }
 
-        private void start() {
+        public void start() {
             if (running)
                 return;
 
             running = true;
-            reset();
 
             task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
                 if (!closed && hasClosed()) {

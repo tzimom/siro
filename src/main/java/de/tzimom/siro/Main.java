@@ -35,6 +35,9 @@ public class Main extends JavaPlugin {
             CustomPlayer.getPlayer(player.getUniqueId()).onPreLogin(false);
             CustomPlayer.getPlayer(player.getUniqueId()).onJoin();
         });
+
+        if (gameManager.isRunning())
+            gameManager.getBorderManager().start();
     }
 
     public void onDisable() {

@@ -2,10 +2,7 @@ package de.tzimom.siro.utils;
 
 import de.tzimom.siro.Main;
 import de.tzimom.siro.managers.GameManager;
-import org.bukkit.Achievement;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -142,7 +139,7 @@ public class CustomPlayer {
     }
 
     private long getPlayedTime() {
-        int timePlayed = (int) (System.currentTimeMillis() - joinTimestamp);
+        int timePlayed = Math.min((int) (System.currentTimeMillis() - joinTimestamp), 0);
         timePlayed += playTimes.getOrDefault(GameManager.getCurrentDay() + (nextDay ? 1 : 0), 0l);
         return timePlayed;
     }
@@ -154,15 +151,15 @@ public class CustomPlayer {
     public void playTimeCheck() {
         long remainingTime = getRemainingTime();
 
-        if (remainingTime <= 0) {
-            kick("§cDeine Zeit ist abgelaufen", false);
-            return;
-        }
-
         Player player = getPlayer();
 
         if (player == null)
             return;
+
+        if (remainingTime <= 0) {
+            kick("§cDeine Zeit ist abgelaufen", false);
+            return;
+        }
 
         int seconds = (int) Math.ceil(remainingTime / 1000d);
 
@@ -188,10 +185,35 @@ public class CustomPlayer {
             player.kickPlayer(reason);
     }
 
-    private boolean isInCombat() {
-        return combat != null && Bukkit.getOfflinePlayer(uuid).isOnline() || getPlayer() != null && getPlayer().isOnline()
-                && getPlayer().getLocation().clone().add(Bukkit.getPlayer(uuid).getLocation().clone().multiply(-1))
-                .lengthSquared() < MAX_COMBAT_DISTANCE * MAX_COMBAT_DISTANCE;
+    public boolean isInCombat() {
+        final Player player = getPlayer();
+
+        if (player == null || !player.isOnline()) {
+            combat = null;
+            return false;
+        }
+
+        final Player combatPlayer = Bukkit.getPlayer(combat);
+
+        if (combatPlayer == null || !combatPlayer.isOnline()) {
+            combat = null;
+            return false;
+        }
+
+        final Location playerLocation = player.getLocation();
+        final Location combatPlayerLocation = combatPlayer.getLocation();
+
+        final double distanceX = playerLocation.getX() - combatPlayerLocation.getX();
+        final double distanceY = playerLocation.getY() - combatPlayerLocation.getY();
+        final double distanceZ = playerLocation.getZ() - combatPlayerLocation.getZ();
+        final double distanceSquared = distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ;
+
+        if (distanceSquared >= MAX_COMBAT_DISTANCE * MAX_COMBAT_DISTANCE) {
+            combat = null;
+            return false;
+        }
+
+        return true;
     }
 
     public void setCombat(UUID uuid) {
