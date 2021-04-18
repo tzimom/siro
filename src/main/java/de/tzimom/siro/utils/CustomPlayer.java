@@ -98,9 +98,14 @@ public class CustomPlayer {
     }
 
     public void prepare() {
+        if (plugin.getGameManager().isRunning() && team == null) kick("§cDu wurdest keinem Team zugeteilt", true);
+
         Player player = getPlayer();
 
         if (player == null)
+            return;
+
+        if (player.isOp())
             return;
 
         player.getInventory().clear();
@@ -171,6 +176,11 @@ public class CustomPlayer {
 
         if (player == null)
             return;
+
+        if (player.isOp()) {
+            player.sendMessage(plugin.prefix + "§7Kick durch OP verhindert: " + reason);
+            return;
+        }
 
         if (force || !inCombat())
         player.kickPlayer(reason);

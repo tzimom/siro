@@ -57,6 +57,7 @@ public class Main extends JavaPlugin {
         pluginManager.registerEvents(new AsyncPlayerPreLoginEventListener(), this);
         pluginManager.registerEvents(new EntityDamageByEntityEventListener(), this);
         pluginManager.registerEvents(new EntityDamageEventListener(), this);
+        pluginManager.registerEvents(new EntitySpawnEventListener(), this);
         pluginManager.registerEvents(new FoodLevelChangeEventListener(), this);
         pluginManager.registerEvents(new PlayerDeathEventListener(), this);
         pluginManager.registerEvents(new PlayerInteractEventListener(), this);

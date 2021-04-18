@@ -18,11 +18,15 @@ public enum Usage {
             case SIRO:
                 sendLine(sender, "siro start", "Starts the game");
                 sendLine(sender, "siro stop", "Ends the game or cancels the countdown");
+                sendLine(sender, "siro addspawn", "Adds a spawn point");
+                sendLine(sender, "siro removespawn <ID>", "Removes a spawn point");
+                sendLine(sender, "siro spawns", "Displays the spawns");
                 break;
             case TEAM:
                 sendLine(sender, "team create <TeamName> <SpielerName> [<SpielerName>]", "Erstellt ein Team");
                 sendLine(sender, "team delete <TeamName>", "Löscht ein Team");
                 sendLine(sender, "team list", "Listet die Teams auf");
+                sendLine(sender, "team of [<PlayerName>]|[*]", "Zeigt, in welchem Team ein, oder alle Spieler sich befinden");
                 break;
             case BAN:
                 sendLine(sender, "ban <SpielerName>", "Schließt einen Spieler aus dem Projekt aus");

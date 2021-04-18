@@ -2,17 +2,18 @@ package de.tzimom.siro.managers;
 
 import de.tzimom.siro.Main;
 import de.tzimom.siro.utils.CustomPlayer;
+import de.tzimom.siro.utils.Team;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.WorldBorder;
+import org.bukkit.entity.Player;
+import org.omg.CORBA.CustomMarshal;
 
-import javax.swing.border.Border;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GameManager extends FileManager {
 
@@ -27,6 +28,7 @@ public class GameManager extends FileManager {
     private final TeamManager teamManager = new TeamManager();
     private final PlayerManager playerManager = new PlayerManager();
     private final BorderManager borderManager = new BorderManager();
+    private final SpawnPointManager spawnPointManager = new SpawnPointManager();
     private final CountDown countDown = new CountDown();
 
     public GameManager() {
@@ -58,7 +60,60 @@ public class GameManager extends FileManager {
         if (running || countDown.running)
             return false;
 
+        final Collection<Location> spawns = spawnPointManager.getSpawns().values();
+        final List<Location> spawnsSorted = spawns.stream().sorted(Comparator.comparing
+                (spawnPointManager::distanceFromCenterSquared)).collect(Collectors.toList());
+
+        for (Team team : teamManager.getTeams()) {
+            if (spawnsSorted.isEmpty())
+                break;
+
+            Location spawn = null;
+
+            for (UUID uuid : team.getMembers()) {
+                if (uuid == null)
+                    continue;
+
+                final Player player = Bukkit.getPlayer(uuid);
+
+                if (player == null)
+                    continue;
+
+                if (spawn == null) {
+                    spawn = spawnsSorted.get(0);
+                    player.teleport(spawn);
+                    spawnsSorted.remove(spawn);
+                } else {
+                    Location nearest = null;
+                    int nearestDistanceSquared = 0;
+
+                    for (Location current : spawnsSorted) {
+                        int distanceX = current.getBlockX() - spawn.getBlockY();
+                        int distanceZ = current.getBlockZ() - spawn.getBlockZ();
+
+                        int currentNearestDistanceSquared = distanceX * distanceZ;
+
+                        if (nearest == null || currentNearestDistanceSquared < nearestDistanceSquared) {
+                            nearest = current;
+                            nearestDistanceSquared = currentNearestDistanceSquared;
+                        }
+                    }
+                }
+            }
+        }
+
         countDown.start();
+
+        Bukkit.getWorlds().forEach(world -> {
+            world.setTime(0);
+            world.setStorm(false);
+            world.setThundering(false);
+
+            world.getEntities().forEach(entity -> {
+                if (!(entity instanceof Player))
+                    entity.remove();
+            });
+        });
         return true;
     }
 
@@ -116,17 +171,23 @@ public class GameManager extends FileManager {
         return running;
     }
 
+    public boolean isCountDownRunning() {
+        return countDown.running;
+    }
+
     public static long getCurrentDay() {
         long currentTime = System.currentTimeMillis();
         return (long) Math.floor(currentTime / 1000d / 60d / 60d / 24d);
     }
 
-    private Set<CustomPlayer> getPlayers() {
+    public Set<CustomPlayer> getPlayers() {
         Set<CustomPlayer> players = new HashSet<>();
 
         teamManager.getTeams().forEach(team -> {
-            for (UUID member : team.getMembers())
-                players.add(CustomPlayer.getPlayer(member));
+            for (UUID member : team.getMembers()) {
+                if (member != null)
+                    players.add(CustomPlayer.getPlayer(member));
+            }
         });
 
         return players;
@@ -134,6 +195,10 @@ public class GameManager extends FileManager {
 
     public TeamManager getTeamManager() {
         return teamManager;
+    }
+
+    public SpawnPointManager getSpawnPointManager() {
+        return spawnPointManager;
     }
 
     private class CountDown {
@@ -205,8 +270,7 @@ public class GameManager extends FileManager {
             overworld = Bukkit.getWorld("world").getWorldBorder();
             nether = Bukkit.getWorld("world_nether").getWorldBorder();
 
-            overworld.setCenter(0d, 0d);
-            nether.setCenter(0d, 0d);
+            reset();
         }
 
         private void start() {
@@ -250,10 +314,16 @@ public class GameManager extends FileManager {
 
             int playerCount = getPlayers().size();
 
-            radiusOverworld = (int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_OVERWORLD * playerCount));
-            int radiusNether = (int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_NETHER * playerCount));
+            overworld.setCenter(0d, 0d);
+            nether.setCenter(0d, 0d);
 
-            overworld.setSize(radiusOverworld);
+            overworld.setDamageAmount(1d);
+            overworld.setDamageBuffer(0d);
+
+            radiusOverworld = Math.max((int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_OVERWORLD * playerCount)), FINAL_RADIUS);
+            int radiusNether = Math.max((int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_NETHER * playerCount)), FINAL_RADIUS);
+
+            overworld.setSize(GameManager.this.running ? radiusOverworld : FINAL_RADIUS);
             nether.setSize(radiusNether);
         }
     }

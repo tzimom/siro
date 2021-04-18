@@ -10,7 +10,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.omg.CORBA.CustomMarshal;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -78,11 +80,6 @@ public class TeamCommand implements CommandExecutor {
                 return true;
             }
 
-            for (UUID member : team.getMembers()) {
-                if (member != null)
-                    CustomPlayer.getPlayer(member).setTeam(null);
-            }
-
             plugin.getGameManager().getTeamManager().deleteTeam(team);
             sender.sendMessage(plugin.prefix + "§cDas Team " + team.getTeamName() + " wurde gelöscht");
         } else if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
@@ -94,6 +91,45 @@ public class TeamCommand implements CommandExecutor {
                 sender.sendMessage(plugin.prefix + "§6§lTeams:");
                 teams.forEach(team -> sender.sendMessage(plugin.prefix + "§8- §6" + team.getTeamName()));
             }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("of")) {
+            if (args[1].equalsIgnoreCase("*")) {
+                Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+
+                if (players.isEmpty()) {
+                    sender.sendMessage(plugin.prefix + "§cEs sind keine Spieler online");
+                    return true;
+                }
+
+                sender.sendMessage(plugin.prefix + "§6§lSpieler Teams:");
+                players.forEach(player -> {
+                    final UUID uuid = player.getUniqueId();
+                    final CustomPlayer customPlayer = CustomPlayer.getPlayer(uuid);
+                    final Team team = customPlayer.getTeam();
+
+                    sender.sendMessage(plugin.prefix + "§8- §b" + player.getName() + "§8: " +
+                            (team == null ? "§7Kein Team" : "§7" + team.getTeamName()));
+                });
+
+                return true;
+            }
+
+            final Player player = Bukkit.getPlayer(args[1]);
+
+            if (player == null) {
+                sender.sendMessage(plugin.prefix + "§cDer Spieler ist nicht online");
+                return true;
+            }
+
+            final UUID uuid = player.getUniqueId();
+            final CustomPlayer customPlayer = CustomPlayer.getPlayer(uuid);
+            final Team team = customPlayer.getTeam();
+
+            if (team == null) {
+                sender.sendMessage(plugin.prefix + "§cDer Spieler ist in keinem Team");
+                return true;
+            }
+
+            sender.sendMessage(plugin.prefix + "§6" + player.getName() + " §7ist im Team §b" + team.getTeamName());
         } else {
             Usage.TEAM.send(sender);
         }

@@ -23,6 +23,7 @@ public class TeamManager extends FileManager {
 
             for (int i = 0; i < membersStrings.size(); i++) {
                 UUID uuid = UUID.fromString(membersStrings.get(i));
+
                 CustomPlayer.getPlayer(uuid).setTeam(team);
 
                 members[i] = uuid;
@@ -62,7 +63,8 @@ public class TeamManager extends FileManager {
         teams.remove(team);
 
         for (UUID member : team.getMembers())
-            CustomPlayer.getPlayer(member).setTeam(null);
+            if (member != null)
+                CustomPlayer.getPlayer(member).setTeam(null);
     }
 
     public Team getTeam(String teamName) {
