@@ -50,10 +50,8 @@ public class CustomPlayer {
     }
 
     public void onPreLogin(boolean protect) {
-        if (nextDay && (!playTimes.containsKey(GameManager.getCurrentDay()) || getRemainingTime() > 0)) {
+        if (nextDay && (!playTimes.containsKey(GameManager.getCurrentDay()) || getRemainingTime() > 0))
             nextDay = false;
-            return;
-        }
 
         long remainingTime = getRemainingTime();
 
@@ -139,7 +137,7 @@ public class CustomPlayer {
     }
 
     private long getPlayedTime() {
-        int timePlayed = Math.min((int) (System.currentTimeMillis() - joinTimestamp), 0);
+        int timePlayed = Math.max((int) (System.currentTimeMillis() - joinTimestamp), 0);
         timePlayed += playTimes.getOrDefault(GameManager.getCurrentDay() + (nextDay ? 1 : 0), 0l);
         return timePlayed;
     }

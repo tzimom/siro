@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class Team {
 
-    public static final byte MAX_NAME_LENGTH = 16;
+    public static final byte MAX_NAME_LENGTH = 20;
 
     private String teamName;
     private UUID[] members;

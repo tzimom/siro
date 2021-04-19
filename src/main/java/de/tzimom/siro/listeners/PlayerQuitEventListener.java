@@ -15,6 +15,8 @@ public class PlayerQuitEventListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         CustomPlayer.getPlayer(uuid).onQuit();
+
+        event.setQuitMessage("§8« §c" + player.getName());
     }
 
 }

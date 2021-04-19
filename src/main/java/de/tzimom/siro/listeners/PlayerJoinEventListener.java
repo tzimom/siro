@@ -4,6 +4,7 @@ import de.tzimom.siro.Main;
 import de.tzimom.siro.utils.CustomPlayer;
 import net.minecraft.server.v1_8_R1.EnumClientCommand;
 import net.minecraft.server.v1_8_R1.PacketPlayInClientCommand;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,6 +31,10 @@ public class PlayerJoinEventListener implements Listener {
 
         if (plugin.getGameManager().isRunning()) customPlayer.onJoin();
         else customPlayer.prepare();
+
+        event.setJoinMessage("§8» §a" + player.getName());
+        player.sendMessage(plugin.prefix + "§f§lAUFNAHME GESTARTET?");
+        customPlayer.playSound(Sound.NOTE_PLING);
     }
 
 }
