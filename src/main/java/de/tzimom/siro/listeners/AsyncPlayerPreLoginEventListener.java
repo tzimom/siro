@@ -22,12 +22,13 @@ public class AsyncPlayerPreLoginEventListener implements Listener {
 
         boolean op = false;
 
-        for (OfflinePlayer operator : Bukkit.getOperators()) {
-            if (operator.getUniqueId().equals(event.getUniqueId())) {
-                op = true;
-                break;
+        if (customPlayer.getTeam() == null)
+            for (OfflinePlayer operator : Bukkit.getOperators()) {
+                if (operator.getUniqueId().equals(event.getUniqueId())) {
+                    op = true;
+                    break;
+                }
             }
-        }
 
         customPlayer.onPreLogin(!op);
 

@@ -50,19 +50,19 @@ public class CustomPlayer {
     }
 
     public void onPreLogin(boolean protect) {
-        joinTimestamp = System.currentTimeMillis();
-
-        if (protect) joinTimestamp += PROTECTION_TIME * 1000;
-
-        long remainingTime = getRemainingTime();
-
-        if (remainingTime > 0 && nextDay) {
+        if (!playTimes.containsKey(GameManager.getCurrentDay()) && nextDay) {
             nextDay = false;
             return;
         }
 
+        long remainingTime = getRemainingTime();
+
         if (remainingTime <= 0 && !nextDay)
             nextDay = true;
+
+        joinTimestamp = System.currentTimeMillis();
+
+        if (protect) joinTimestamp += PROTECTION_TIME * 1000;
     }
 
     public void onJoin() {
