@@ -50,7 +50,7 @@ public class CustomPlayer {
     }
 
     public void onPreLogin(boolean protect) {
-        if (!playTimes.containsKey(GameManager.getCurrentDay()) && nextDay) {
+        if (nextDay && (!playTimes.containsKey(GameManager.getCurrentDay()) || getRemainingTime() > 0)) {
             nextDay = false;
             return;
         }
