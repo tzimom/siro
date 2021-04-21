@@ -38,6 +38,8 @@ public class GameManager extends FileManager {
         if (getConfig().contains("closed"))
             borderManager.closed = getConfig().getBoolean("closed");
 
+        borderManager.setup();
+
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             if (!running)
                 return;
@@ -323,8 +325,7 @@ public class GameManager extends FileManager {
                     }
 
                     if (passedDays % SHRINK_INTERVAL == 0) {
-                        int shrink = (int) Math.floor((startingOverworldRadius - FINAL_RADIUS) / (double) TIME_TO_FINAL);
-                        overworld.setSize(startingOverworldRadius - (shrink * passedDays));
+                        shrink();
                     }
                 }
 
@@ -340,23 +341,33 @@ public class GameManager extends FileManager {
             Bukkit.getScheduler().cancelTask(task);
         }
 
-        private void reset() {
-            passedDays = 0;
-            closed = hasClosed();
+        private void shrink() {
+            int shrink = (int) Math.floor((startingOverworldRadius - FINAL_RADIUS) / (double) TIME_TO_FINAL);
+            overworld.setSize(Math.max(startingOverworldRadius - (shrink * passedDays), FINAL_RADIUS));
+        }
 
+        private void setup() {
             int playerCount = getPlayers().size();
-
-            overworld.setCenter(0d, 0d);
-            nether.setCenter(0d, 0d);
-
-            overworld.setDamageAmount(1d);
-            overworld.setDamageBuffer(0d);
 
             startingOverworldRadius = Math.max((int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_OVERWORLD * playerCount)), FINAL_RADIUS);
             int radiusNether = Math.max((int) Math.floor(Math.sqrt(BLOCKS_PER_PLAYER_NETHER * playerCount)), FINAL_RADIUS);
 
             overworld.setSize(GameManager.this.running ? startingOverworldRadius : FINAL_RADIUS);
             nether.setSize(radiusNether);
+            shrink();
+
+            overworld.setCenter(0d, 0d);
+            nether.setCenter(0d, 0d);
+
+            overworld.setDamageAmount(1d);
+            overworld.setDamageBuffer(0d);
+        }
+
+        private void reset() {
+            passedDays = 0;
+            closed = hasClosed();
+
+            setup();
         }
     }
 

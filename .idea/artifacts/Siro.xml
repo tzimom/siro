@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Siro">
+    <output-path>$PROJECT_DIR$/../../../Server/Cyris/Siro/v1.0/plugins</output-path>
+    <root id="archive" name="Siro.jar">
+      <element id="module-output" name="siro" />
+    </root>
+  </artifact>
+</component>
