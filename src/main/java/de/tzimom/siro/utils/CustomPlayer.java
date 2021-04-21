@@ -236,8 +236,8 @@ public class CustomPlayer {
 
         StringBuilder remainingTime = new StringBuilder();
 
-        if (minutes != 0) remainingTime.append(minutes).append(" ").append(Math.abs(minutes) == 1 ? "Minuten" : "Minute").append(" ");
-        if (seconds != 0) remainingTime.append(seconds).append(" ").append(Math.abs(seconds) == 1 ? "Sekunden" : "Sekunde").append(" ");
+        if (minutes != 0) remainingTime.append(minutes).append(" ").append(Math.abs(minutes) != 1 ? "Minuten" : "Minute").append(" ");
+        if (seconds != 0) remainingTime.append(seconds).append(" ").append(Math.abs(seconds) != 1 ? "Sekunden" : "Sekunde").append(" ");
 
         player.sendMessage(plugin.prefix + "§7Du kannst noch §6" + remainingTime.toString() + "§7spielen");
     }

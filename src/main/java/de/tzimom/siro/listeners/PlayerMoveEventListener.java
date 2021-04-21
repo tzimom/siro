@@ -24,9 +24,14 @@ public class PlayerMoveEventListener implements Listener {
         Location to = event.getTo();
 
         if (customPlayer.isProtected()) {
-            event.setCancelled(from.getBlockX() != to.getBlockX()
-                    || Math.abs(from.getBlockY() - to.getBlockY()) > 3
-                    || from.getBlockZ() != to.getBlockZ());
+            boolean movedOutOfBlock = from.getBlockX() != to.getBlockX()
+                    || from.getBlockY() != to.getBlockY()
+                    || from.getBlockZ() != to.getBlockZ();
+
+            if (movedOutOfBlock) {
+                player.teleport(new Location(from.getWorld(), from.getX(), from.getY(), from.getZ()));
+                event.setCancelled(true);
+            }
         }
     }
 
